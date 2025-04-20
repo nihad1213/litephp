@@ -11,7 +11,7 @@
 | It helps create a centralized place to manage startup behavior, keeping 
 | other files clean and focused only on their responsibilities.
 |
-| Written by: Nihad Namatli
+| Created by: Nihad Namatli
 |--------------------------------------------------------------------------
 */
 
