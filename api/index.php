@@ -1,31 +1,67 @@
 <?php
 
-// Load bootstrap.php file
+// Load the bootstrap.php file
 require __DIR__ . '/bootstrap.php';
 
-
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = trim($path, "/"); // Trim leading and trailing slashes
 
-$parts = explode("/", $path);
+// Debugging: Output the current request path
+error_log("Current path: $path");
 
-$resource = $parts[2];
-
-if ($resource != "tasks") {
-    http_response_code(404);
+// Handle the login route
+if ($path === "api/login") {
+    require __DIR__ . '/login.php'; // This is the login logic
     exit;
 }
 
-$id = $parts[3] ?? null;
+// Handle tasks route (e.g., /api/tasks or /api/tasks/{id})
+if ($path === "api/tasks" || str_starts_with($path, "api/tasks/")) {
+    // Extract task ID from the URL, if available (e.g., /api/tasks/1)
+    $parts = explode("/", $path);
+    $id = (count($parts) > 2) ? $parts[2] : null;
 
+    // Authorization header check
+    $headers = getallheaders();
+    $authorization = $headers['Authorization'] ?? null;
 
-$taskGateway = new TaskGateway($database);
-$controller = new TaskController($taskGateway); 
-$controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
+    if ($authorization) {
+        list($type, $token) = explode(' ', $authorization);
 
+        if ($type === 'Bearer' && !empty($token)) {
+            try {
+                // Initialize JWT Codec with the secret key
+                $jwtCodec = new JWTCodec($_ENV["JWT_SECRET"]);
+                $decoded = $jwtCodec->decode($token); // Decode and validate the token
 
+                // Example: Access the user info from the token
+                $user = $decoded['user']; // Adjust according to your JWT payload
 
+                // Proceed with task processing (you could also check user roles here)
+                $taskGateway = new TaskGateway($database);
+                $controller = new TaskController($taskGateway);
+                $controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
+                exit;
 
+            } catch (Exception $e) {
+                // Invalid token error
+                http_response_code(401);
+                echo json_encode(["error" => "Invalid token: " . $e->getMessage()]);
+                exit;
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid authorization token format"]);
+            exit;
+        }
+    } else {
+        // Token missing
+        http_response_code(401);
+        echo json_encode(["error" => "Authorization header missing"]);
+        exit;
+    }
+}
 
-
-
-
+// Fallback for unknown routes
+http_response_code(404);
+echo json_encode(["error" => "Route not found"]);
