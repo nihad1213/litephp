@@ -78,3 +78,24 @@ set_exception_handler("ErrorHandler::handleException");
 */
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
+
+
+/*
+|--------------------------------------------------------------------------
+| Database Connection
+|--------------------------------------------------------------------------
+| Establishes a connection to the database using configuration values from
+| environment variables. This allows flexible and secure database access.
+| Supports multiple database types, including MySQL and SQLite, based on 
+| the settings provided in the .env file.
+*/
+$database = new Database(
+    $_ENV['DB_CONNECTION'],
+    $_ENV['DB_HOST'],
+    $_ENV['DB_PORT'],
+    $_ENV['DB_NAME'],
+    $_ENV['DB_USER'],
+    $_ENV['DB_PASSWORD'],
+    $_ENV['DB_SQLITE_PATH'],
+);
+$database->getConnect();
