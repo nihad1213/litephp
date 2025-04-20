@@ -1,8 +1,5 @@
 <?php
 
-//Strict type checking
-declare(strict_types=1);
-
 // Load bootstrap.php file
 require __DIR__.  '/bootstrap.php';
 
@@ -14,18 +11,13 @@ $resource = $parts[2];
 
 $id = $parts[3] ?? null;
 
-echo $resource . " " . $id; 
-
-
 if ($resource != "tasks") {
     http_response_code(404);
     exit;
 }
 
-require dirname(__DIR__) . "/src/TaskController.php";
+echo $resource . " " . $id; 
 
-$controller = new TaskController();
-$controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
 
-// print_r($parts);
-// echo "test";
+
+
