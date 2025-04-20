@@ -76,5 +76,5 @@ set_exception_handler("ErrorHandler::handleException");
 | If you're using a .env file (e.g., for DB credentials), uncomment this block.
 | It securely loads variables into $_ENV.
 */
-// $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-// $dotenv->load();
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
