@@ -1,7 +1,8 @@
 <?php
 
 // Load bootstrap.php file
-require __DIR__.  '/bootstrap.php';
+require __DIR__ . '/bootstrap.php';
+
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
@@ -15,6 +16,9 @@ if ($resource != "tasks") {
     http_response_code(404);
     exit;
 }
+
+$controller = new TaskController();
+$controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
 
 echo $resource . " " . $id; 
 

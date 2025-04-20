@@ -8,6 +8,7 @@ class ComposerStaticInit2123ba8317a7b9e31307b42ff3e1dc66
 {
     public static $fallbackDirsPsr4 = array (
         0 => __DIR__ . '/../..' . '/src',
+        1 => __DIR__ . '/../..' . '/controllers',
     );
 
     public static $classMap = array (
