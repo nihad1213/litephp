@@ -18,7 +18,8 @@ if ($resource != "tasks") {
 $id = $parts[3] ?? null;
 
 
-$controller = new TaskController();
+$taskGateway = new TaskGateway($database);
+$controller = new TaskController($taskGateway); 
 $controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
 
 

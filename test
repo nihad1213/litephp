@@ -1,2 +1,10 @@
 # Start the server
 php -S localhost:8000
+
+# Json file to test it
+{
+  "name": "Finish API Documentation",
+  "priority": "high",
+  "is_completed": false
+}
+
