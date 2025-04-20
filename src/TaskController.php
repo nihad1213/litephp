@@ -14,10 +14,13 @@ class TaskController {
                 case "GET":
                     echo "show" . $id;
                     break;
-                case "PATHC":
+                case "PATCH":
                     echo "update" . $id;
                     break;
-                }
+                case "DELETE":
+                    echo "delete" . $id;
+                    break;
+            }
         }
     }
 }
