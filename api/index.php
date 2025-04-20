@@ -16,5 +16,10 @@ if ($resource != "tasks") {
     exit;
 }
 
+require dirname(__DIR__) . "/src/TaskController.php";
+
+$controller = new TaskController();
+$controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
+
 // print_r($parts);
 // echo "test";
