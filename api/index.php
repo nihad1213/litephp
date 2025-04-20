@@ -10,5 +10,11 @@ $id = $parts[3] ?? null;
 
 echo $resource . " " . $id; 
 
+
+if ($resource != "tasks") {
+    http_response_code(404);
+    exit;
+}
+
 // print_r($parts);
 // echo "test";
