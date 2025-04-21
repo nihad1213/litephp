@@ -65,55 +65,65 @@ switch ($command) {
     case 'key:generate':
         /*
         |------------------------------------------------------------------
-        | Generate a New JWT_SECRET Key in .enf file
+        | Generate a New JWT_SECRET Key in .env file
         |------------------------------------------------------------------
         | This command generates a new JWT_SECRET key and outputs it to the 
         | console. The key is typically used for encryption and security 
         | purposes in PHP applications.
         */
         $envFile = __DIR__ . '/.env';
-
+    
         // Check if .env file exists
         if (!file_exists($envFile)) {
             echo ".env file not found. Run: cp .env.example .env\n";
             return;
         }
-
+    
         // Read current contents of .env
         $envContent = file_get_contents($envFile);
-
-        // Check if JWT_SECRET already exists
-        if (preg_match('/^JWT_SECRET\s*=\s*(.+)/m', $envContent, $matches)) {
-            $existingKey = $matches[1];
-
-            echo "JWT_SECRET is already defined: $existingKey\n";
-            echo "Do you want to overwrite it? (yes/no): ";
-            $handle = fopen ("php://stdin","r");
-            $line = trim(fgets($handle));
-
-            if (strtolower($line) !== 'yes') {
-                echo "Aborted. JWT_SECRET not changed.\n";
-                return;
-            }
-            fclose($handle);
-        }
-
-        // Generate a new JWT secret
+    
+        // Generate a new JWT secret (32 bytes = 64 hex characters)
         $key = bin2hex(random_bytes(32));
-
-        // Update or insert JWT_SECRET
-        if (preg_match('/^JWT_SECRET\s*=.*/m', $envContent)) {
-            $envContent = preg_replace('/^JWT_SECRET\s*=.*/m', 'JWT_SECRET=' . $key, $envContent);
+    
+        // Check how JWT_SECRET is currently defined in the file
+        if (preg_match('/^JWT_SECRET\s*=\s*([^#\r\n]+)/m', $envContent, $matches)) {
+            // JWT_SECRET exists with a non-empty value (not a comment, not empty)
+            $existingKey = trim($matches[1]);
+            
+            if (!empty($existingKey)) {
+                // Only prompt for confirmation if there's an actual value
+                echo "JWT_SECRET is already defined: $existingKey\n";
+                echo "Do you want to overwrite it? (yes/no): ";
+                $handle = fopen("php://stdin", "r");
+                $line = trim(fgets($handle));
+                fclose($handle);
+    
+                if (strtolower($line) !== 'yes') {
+                    echo "Aborted. JWT_SECRET not changed.\n";
+                    return;
+                }
+            }
+        }
+    
+        // Update or insert JWT_SECRET based on its current status
+        if (preg_match('/^JWT_SECRET\s*=\s*$/m', $envContent) || 
+            preg_match('/^JWT_SECRET\s*=\s*#/m', $envContent)) {
+            // JWT_SECRET exists but is empty or has a comment, replace without asking
+            $envContent = preg_replace('/^JWT_SECRET\s*=.*$/m', 'JWT_SECRET=' . $key, $envContent);
+        } else if (preg_match('/^JWT_SECRET\s*=/m', $envContent)) {
+            // JWT_SECRET exists with some value (and we've already confirmed overwrite)
+            $envContent = preg_replace('/^JWT_SECRET\s*=.*$/m', 'JWT_SECRET=' . $key, $envContent);
         } else {
+            // JWT_SECRET doesn't exist at all, add it to the end of the file
             $envContent .= "\nJWT_SECRET=" . $key . "\n";
         }
-
-        // Save updated contents to .env
+    
+        // Save updated contents back to .env
         file_put_contents($envFile, $envContent);
-
+    
         echo "JWT_SECRET updated successfully!\n";
         echo "New key: $key\n";
-
+    
         break;
     
     case 'create:controller':
