@@ -1,5 +1,5 @@
 # Start the server
-php -S localhost:8000
+php -S localhost:8000 -t api
 
 # Json file to test it
 {

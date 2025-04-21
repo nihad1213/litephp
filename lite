@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+// Ensure script runs from the correct project directory
+chdir(__DIR__);
+
+// Get the first command-line argument (e.g., 'start')
+$command = $argv[1] ?? null;
+
+switch ($command) {
+    case 'start':
+        echo "Starting the server at http://localhost:8000...\n";
+        echo "Press Ctrl+C to stop the server.\n\n";
+
+        $cmd = 'php -S localhost:8000 -t api';
+        passthru($cmd);
+        break;
+
+    default:
+        echo "Available commands:\n";
+        echo "start   Start the PHP development server\n";
+        break;
+}
