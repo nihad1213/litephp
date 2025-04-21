@@ -1,9 +1,11 @@
 <?php
 
-class TaskGateway {
+class TaskGateway 
+{
     private PDO $conn;
     
-    public function __construct(Database $database) {
+    public function __construct(Database $database) 
+    {
         $this->conn = $database->getConnect();
     }
 
@@ -11,7 +13,8 @@ class TaskGateway {
      * Get all tasks from the database
      * @return array
      */
-    public function getAll(): array {
+    public function getAll(): array 
+    {
         $sql = "SELECT * FROM `task`";
 
         $stmt = $this->conn->query($sql);
@@ -30,7 +33,8 @@ class TaskGateway {
      * @param string $id
      * @return array|false
      */
-    public function get(string $id): array|false {
+    public function get(string $id): array|false 
+    {
         $sql = "SELECT * FROM `task` WHERE id = :id";
         
         $stmt = $this->conn->prepare($sql);
@@ -46,7 +50,8 @@ class TaskGateway {
      * @param array $data
      * @return string
      */
-    public function create(array $data): string {
+    public function create(array $data): string 
+    {
         $sql = "INSERT INTO `task` 
                 (`name`, `priority`, `is_completed`) 
                 VALUES 
@@ -69,7 +74,8 @@ class TaskGateway {
      * @param array $data
      * @return void
      */
-    public function update(string $id, array $data): void {
+    public function update(string $id, array $data): void 
+    {
         try {
             $sql = "UPDATE `task` SET 
                     `name` = :name, 
@@ -104,7 +110,8 @@ class TaskGateway {
      * @param string $id
      * @return void
      */
-    public function delete(string $id): void {
+    public function delete(string $id): void 
+    {
         $sql = "DELETE FROM `task` WHERE id = :id";
         
         $stmt = $this->conn->prepare($sql);
