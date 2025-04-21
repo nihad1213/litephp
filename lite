@@ -126,5 +126,6 @@ switch ($command) {
         */
         echo "Available commands:\n";
         echo "start   Start the PHP development server\n";
+        echo "key:generate   Generate a new JWT_SECRET key in .env file\n";
         break;
 }
