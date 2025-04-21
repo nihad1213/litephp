@@ -32,13 +32,21 @@ if ($path === "tasks" || str_starts_with($path, "tasks/")) {
             echo json_encode(["error" => "Invalid authorization format, expected 'Bearer token'"]);
             exit;
         }
-        
+
         list($type, $token) = explode(' ', $authorization, 2);
 
         if ($type === 'Bearer' && !empty($token)) {
             try {
+                // ✅ Check if JWT_SECRET is set
+                $jwtSecret = $_ENV["JWT_SECRET"] ?? null;
+                if (!$jwtSecret) {
+                    http_response_code(500);
+                    echo json_encode(["error" => "JWT_SECRET is not set in the environment."]);
+                    exit;
+                }
+
                 // Initialize JWT Codec with the secret key
-                $jwtCodec = new JWTCodec($_ENV["JWT_SECRET"]);
+                $jwtCodec = new JWTCodec($jwtSecret);
                 $decoded = $jwtCodec->decode($token); // Decode and validate the token
 
                 // Example: Access the user info from the token
