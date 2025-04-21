@@ -52,10 +52,8 @@ if ($path === "ROUTE_NAME" || str_starts_with($path, "ROUTE_NAME/")) {
                 // Example: Access the user info from the token
                 $user = $decoded['user'];
 
-                // Proceed with task processing (you could also check user roles here)
-                $taskGateway = new TaskGateway($database);
-                $controller = new TaskController($taskGateway);
-                $controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
+                // Create Objects from gateway and controllers
+                
                 exit;
 
             } catch (Exception $e) {
