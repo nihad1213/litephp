@@ -25,7 +25,8 @@
 * -----------------------------------------------------------------------------
 */
 
-class Database {
+class Database 
+{
 
     /*
     * -------------------------------------------------------------------------
@@ -77,7 +78,8 @@ class Database {
     *  - PDO : Configured PDO instance ready for database interaction
     * -------------------------------------------------------------------------
     */
-    public function getConnect(): PDO {
+    public function getConnect(): PDO 
+    {
         $dsn = '';
 
         switch ($this->driver) {

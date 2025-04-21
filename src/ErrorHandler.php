@@ -15,7 +15,8 @@
 * -----------------------------------------------------------------------------
 */
 
-class ErrorHandler {
+class ErrorHandler 
+{
 
     /*
     * -------------------------------------------------------------------------
@@ -41,8 +42,8 @@ class ErrorHandler {
         int $errno,
         string $errstr,
         string $errfile,
-        int $errline
-    ): void {
+        int $errline ): void 
+    {
         throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
     }
 
@@ -61,7 +62,8 @@ class ErrorHandler {
     *  - void
     * -------------------------------------------------------------------------
     */
-    public static function handleException(Throwable $exception): void {
+    public static function handleException(Throwable $exception): void 
+    {
 
         // Set HTTP response code to 500 Internal Server Error
         http_response_code(500);
