@@ -4,14 +4,14 @@
 require __DIR__ . '/bootstrap.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = trim($path, "/"); // Trim leading and trailing slashes
+$path = trim($path, "/");
 
 // Debugging: Output the current request path
 error_log("Current path: $path");
 
 // Handle the login route
 if ($path === "login") {
-    require __DIR__ . '/login.php'; // This is the login logic
+    require __DIR__ . '/login.php';
     exit;
 }
 
@@ -50,7 +50,7 @@ if ($path === "tasks" || str_starts_with($path, "tasks/")) {
                 $decoded = $jwtCodec->decode($token); // Decode and validate the token
 
                 // Example: Access the user info from the token
-                $user = $decoded['user']; // Adjust according to your JWT payload
+                $user = $decoded['user'];
 
                 // Proceed with task processing (you could also check user roles here)
                 $taskGateway = new TaskGateway($database);
