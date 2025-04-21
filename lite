@@ -42,9 +42,8 @@ $command = $argv[1] ?? null;
 |----------------------------------------------------------------------
 | Switch on Command
 |----------------------------------------------------------------------
-| Depending on the command passed (e.g., 'start'), the script will call 
-| the corresponding function. You can add new cases here for additional 
-| commands such as 'build', 'stop', 'migrate', etc.
+| Depending on the command passed, the script will call 
+| the corresponding function.
 */
 switch ($command) {
     case 'start':
@@ -53,39 +52,16 @@ switch ($command) {
         | Start PHP Built-in Server
         |------------------------------------------------------------------
         | This command launches the built-in PHP development server, serving 
-        | files from the 'api' directory. You can modify the directory or 
-        | port as needed. Once the server is started, the user is prompted 
-        | with instructions to stop it using Ctrl+C.
+        | files from the 'api' directory.Once the server is started, the user
+        | is prompted with instructions to stop it using Ctrl+C.
         */
         echo "Starting the server at http://localhost:8000...\n";
         echo "Press Ctrl+C to stop the server.\n\n";
 
         $cmd = 'php -S localhost:8000 -t api'; // Modify this path if needed
-        passthru($cmd); // Executes the server command and displays output
+        passthru($cmd);
         break;
 
-    /*
-    |----------------------------------------------------------------------
-    | Future Commands Placeholder
-    |----------------------------------------------------------------------
-    | You can add additional cases here for new commands as needed. For 
-    | example, to add a 'build' command, add a case for it like so:
-    |
-    | case 'build':
-    |     // Handle the build command
-    |     break;
-    |
-    | New commands can be implemented with the same structure, using 
-    | `passthru()` or calling any custom function as needed.
-    |
-    | Available commands could include:
-    |   - start    Start the PHP server
-    |   - build    Compile assets or perform other build tasks
-    |   - migrate  Run database migrations
-    |   - stop     Stop running services or processes
-    |
-    | Each new command will be added here as a new case in the switch statement.
-    */
     
     default:
         /*
@@ -94,7 +70,6 @@ switch ($command) {
         |------------------------------------------------------------------
         | If no command is provided or an invalid command is entered, this 
         | section will output the list of available commands for the user.
-        | You can update this list as you add new commands.
         */
         echo "Available commands:\n";
         echo "start   Start the PHP development server\n";
