@@ -294,7 +294,6 @@ switch ($command) {
         // Generate boilerplate gateway content
         $content = <<<PHP
         <?php
-        require_once __DIR__ . "/../bootstrap.php";
         
         class {$gatewayName} 
         {
