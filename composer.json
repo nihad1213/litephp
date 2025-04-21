@@ -1,10 +1,30 @@
 {
+    "name": "nihad1213/litephp",
+    "description": "A lightweight PHP framework for building REST APIS.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nihad Namatli",
+            "email": "nihad.nemetli@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "vlucas/phpdotenv": "^5.6"
+    },
+
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+
     "autoload": {
         "psr-4": {
             "": ["src/", "controllers/", "gateways/"]
         }
-    },
-    "require": {
-        "vlucas/phpdotenv": "^5.6"
     }
 }
