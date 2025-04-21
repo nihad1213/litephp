@@ -7,7 +7,7 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = trim($path, "/");
 
 // Debugging: Output the current request path
-error_log("Current path: $path");
+// error_log("Current path: $path");
 
 // Handle the login route
 if ($path === "login") {
@@ -15,8 +15,8 @@ if ($path === "login") {
     exit;
 }
 
-// Handle tasks route (e.g., /tasks or /tasks/{id})
-if ($path === "tasks" || str_starts_with($path, "tasks/")) {
+// Handle route (e.g., /tasks or /tasks/{id})
+if ($path === "ROUTE_NAME" || str_starts_with($path, "ROUTE_NAME/")) {
     // Extract task ID from the URL, if available (e.g., /tasks/1)
     $parts = explode("/", $path);
     $id = (count($parts) > 1) ? $parts[1] : null;
