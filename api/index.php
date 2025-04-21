@@ -37,7 +37,7 @@ if ($path === "tasks" || str_starts_with($path, "tasks/")) {
 
         if ($type === 'Bearer' && !empty($token)) {
             try {
-                // ✅ Check if JWT_SECRET is set
+                //Check if JWT_SECRET is set
                 $jwtSecret = $_ENV["JWT_SECRET"] ?? null;
                 if (!$jwtSecret) {
                     http_response_code(500);
