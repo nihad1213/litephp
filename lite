@@ -164,101 +164,127 @@ switch ($command) {
     
         // Generate boilerplate controller content
         $content = <<<PHP
-        <?php
-        require_once __DIR__ . "/../api/bootstrap.php";
-            
-        class {$controllerName} extends BaseController
-        {
-            /*
-            * Constructor
-            * Injects the related gateway class for DB operations.
-            */
-            public function __construct(private /*GatewayClass*/ \$gateway) {}
-            
-            /*
-            * Main handler for incoming HTTP requests.
-            * Determines action based on HTTP method and optional ID.
-            */
-            public function processRequest(string \$method, ?string \$id): void
+            <?php
+
+            require_once __DIR__ . "/../api/bootstrap.php";
+
+            class {$controllerName} extends BaseController
             {
-                if (\$id === null) {
-                    if (\$method == "GET") {
-                        echo json_encode(\$this->gateway->getAll());
-                    } else if (\$method == "POST") {
-                        \$data = \$this->getJsonInput();
-                        \$errors = \$this->getValidationErrors(\$data);
-            
-                        if (!empty(\$errors)) {
-                            \$this->respondUnprocessableEntity(\$errors);
-                            return;
-                        }
-            
-                        \$id = \$this->gateway->create(\$data);
-                        \$this->respondCreated(\$id);
-                    } else {
-                        \$this->respondMethodNotAllowed("POST, GET");
-                    }
-                } else {
+                /**
+                 * Constructor
+                 * 
+                 * @param {gatewayName} \$gateway The gateway for database operations
+                 */
+                public function __construct(private /*{gatewayName}*/ \$gateway) {}
+
+                /**
+                 * Get all records
+                 */
+                #[Route(path: '{route}', method: 'GET')]
+                public function getAll(): void
+                {
+                    echo json_encode(\$this->gateway->getAll());
+                }
+
+                /**
+                 * Get a specific record by ID
+                 */
+                #[Route(path: '{route}/{id}', method: 'GET')]
+                public function getOne(string \$id): void
+                {
                     \$resource = \$this->gateway->get(\$id);
-            
+
                     if (!\$resource) {
                         \$this->respondNotFound(\$id);
                         return;
                     }
-            
-                    switch (\$method) {
-                        case "GET":
-                            echo json_encode(\$resource);
-                            break;
-                        
-                        case "PATCH":
-                            \$data = \$this->getJsonInput();
-                            \$errors = \$this->getValidationErrors(\$data, false);
-                        
-                            if (!empty(\$errors)) {
-                                \$this->respondUnprocessableEntity(\$errors);
-                                return;
-                            }
-                        
-                            try {
-                                \$this->gateway->update(\$id, \$data);
-                                echo json_encode(["success" => "Entity updated!", "id" => \$id]);
-                            } catch (Exception \$e) {
-                                \$this->respondInternalError(\$e->getMessage());
-                            }
-                            break;
-                        
-                        case "DELETE":
-                            try {
-                                \$this->gateway->delete(\$id);
-                                echo json_encode(["success" => "Entity deleted!", "id" => \$id]);
-                            } catch (Exception \$e) {
-                                \$this->respondInternalError(\$e->getMessage());
-                            }
-                            break;
-                        
-                        default:
-                            \$this->respondMethodNotAllowed("GET, PATCH, DELETE");
+
+                    echo json_encode(\$resource);
+                }
+
+                /**
+                 * Create a new record
+                 */
+                #[Route(path: '{route}', method: 'POST')]
+                public function create(): void
+                {
+                    \$data = \$this->getJsonInput();
+                    \$errors = \$this->getValidationErrors(\$data);
+
+                    if (!empty(\$errors)) {
+                        \$this->respondUnprocessableEntity(\$errors);
+                        return;
+                    }
+
+                    \$id = \$this->gateway->create(\$data);
+                    \$this->respondCreated(\$id);
+                }
+
+                /**
+                 * Update an existing record
+                 */
+                #[Route(path: '{route}/{id}', method: 'PATCH')]
+                public function update(string \$id): void
+                {
+                    \$resource = \$this->gateway->get(\$id);
+
+                    if (!\$resource) {
+                        \$this->respondNotFound(\$id);
+                        return;
+                    }
+
+                    \$data = \$this->getJsonInput();
+                    \$errors = \$this->getValidationErrors(\$data, false);
+
+                    if (!empty(\$errors)) {
+                        \$this->respondUnprocessableEntity(\$errors);
+                        return;
+                    }
+
+                    try {
+                        \$this->gateway->update(\$id, \$data);
+                        echo json_encode(["success" => "Entity updated!", "id" => \$id]);
+                    } catch (\Exception \$e) {
+                        \$this->respondInternalError(\$e->getMessage());
                     }
                 }
-            }
-            
-            /*
-            * Validates input data for creation or update.
-            * Simple checks for required fields.
-            */
-            private function getValidationErrors(array \$data, bool \$is_new = true): array
-            {
-                \$errors = [];
-                        
-                if (\$is_new && empty(\$data['entity'])) {
-                    \$errors[] = "Entity is required.";
+
+                /**
+                 * Delete an existing record
+                 */
+                #[Route(path: '{route}/{id}', method: 'DELETE')]
+                public function delete(string \$id): void
+                {
+                    \$resource = \$this->gateway->get(\$id);
+
+                    if (!\$resource) {
+                        \$this->respondNotFound(\$id);
+                        return;
+                    }
+
+                    try {
+                        \$this->gateway->delete(\$id);
+                        echo json_encode(["success" => "Entity deleted!", "id" => \$id]);
+                    } catch (\Exception \$e) {
+                        \$this->respondInternalError(\$e->getMessage());
+                    }
                 }
-                        
-                return \$errors;
+
+                /**
+                 * Validates input data
+                 */
+                private function getValidationErrors(array \$data, bool \$is_new = true): array
+                {
+                    \$errors = [];
+
+                    if (\$is_new && empty(\$data['entity'])) {
+                        \$errors[] = "Entity is required.";
+                    }
+
+                    return \$errors;
+                }
             }
-        }
-        PHP;
+            PHP;
     
         file_put_contents($controllerFile, $content);
     
@@ -303,129 +329,149 @@ switch ($command) {
         
         // Generate boilerplate gateway content
         $content = <<<PHP
-        <?php
-        
-        class {$gatewayName} 
-        {
-            private PDO \$conn;
-        
-            public function __construct(Database \$database) 
+            <?php
+
+            class {$gatewayName}
             {
-                \$this->conn = \$database->getConnect();
-            }
-        
-            /**
-            * Get all records
-            * @return array
-            */
-            public function getAll(): array 
-            {
-                \$sql = "SELECT * FROM `TABLE_NAME`";
-        
-                \$stmt = \$this->conn->query(\$sql);
-        
-                \$data = [];
-        
-                while (\$row = \$stmt->fetch(PDO::FETCH_ASSOC)) {
-                    \$data[] = \$row;
+                private PDO \$conn;
+
+                public function __construct(Database \$database)
+                {
+                    \$this->conn = \$database->getConnect();
                 }
-        
-                return \$data;
-            }
-        
-            /**
-            * Get a specific record by ID
-            * @param string \$id
-            * @return array|false
-            */
-            public function get(string \$id): array|false 
-            {
-                \$sql = "SELECT * FROM `TABLE_NAME` WHERE id = :id";
-        
-                \$stmt = \$this->conn->prepare(\$sql);
-                \$stmt->bindValue(":id", \$id, PDO::PARAM_INT);
-                \$stmt->execute();
-        
-                return \$stmt->fetch(PDO::FETCH_ASSOC);
-            }
-        
-            /**
-            * Create a new record
-            * @param array \$data
-            * @return string
-            */
-            public function create(array \$data): string 
-            {
-                \$sql = "INSERT INTO `TABLE_NAME` 
-                    (/* entity fields */) 
-                    VALUES 
-                    (/* :bindings */)";
-        
-                \$stmt = \$this->conn->prepare(\$sql);
-        
-                // Bind values (example placeholders)
-                // \$stmt->bindValue(':field', \$data['field'], PDO::PARAM_STR);
-        
-                \$stmt->execute();
-        
-                return \$this->conn->lastInsertId();
-            }
-        
-            /**
-            * Update an existing record
-            * @param string \$id
-            * @param array \$data
-            * @return void
-            */
-            public function update(string \$id, array \$data): void 
-            {
-                try {
-                    \$sql = "UPDATE `TABLE_NAME` SET 
-                        /* field1 = :field1, field2 = :field2 */ 
-                        WHERE id = :id";
-            
+
+                /**
+                 * Get all records
+                 * @return array
+                 */
+                public function getAll(): array
+                {
+                    \$sql = "SELECT * FROM `{tablename}`";
+
+                    \$stmt = \$this->conn->query(\$sql);
+                    \$data = [];
+
+                    while (\$row = \$stmt->fetch(PDO::FETCH_ASSOC)) {
+                        \$data[] = \$row;
+                    }
+
+                    return \$data;
+                }
+
+                /**
+                 * Get a specific record by ID
+                 * @param string \$id
+                 * @return array|false
+                 */
+                public function get(string \$id): array|false
+                {
+                    \$sql = "SELECT * FROM `{tablename}` WHERE id = :id";
+
                     \$stmt = \$this->conn->prepare(\$sql);
-        
-                    // Bind values (example placeholders)
-                    // \$stmt->bindValue(':field', \$data['field'], PDO::PARAM_STR);
-                    \$stmt->bindValue(':id', \$id, PDO::PARAM_INT);
-        
+                    \$stmt->bindValue(":id", \$id, PDO::PARAM_INT);
                     \$stmt->execute();
-            
+
+                    return \$stmt->fetch(PDO::FETCH_ASSOC);
+                }
+
+                /**
+                 * Create a new record
+                 * @param array \$data
+                 * @return string
+                 */
+                public function create(array \$data): string
+                {
+                    \$fields = [];
+                    \$placeholders = [];
+                    \$values = [];
+
+                    foreach (\$data as \$field => \$value) {
+                        if (\$field !== 'id') {
+                            \$fields[] = \$field;
+                            \$placeholders[] = ":{\$field}";
+                            \$values[":{\$field}"] = \$value;
+                        }
+                    }
+
+                    \$sql = sprintf(
+                        "INSERT INTO `{tablename}` (%s) VALUES (%s)",
+                        implode(', ', \$fields),
+                        implode(', ', \$placeholders)
+                    );
+
+                    \$stmt = \$this->conn->prepare(\$sql);
+
+                    foreach (\$values as \$placeholder => \$value) {
+                        \$paramType = is_int(\$value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                        \$stmt->bindValue(\$placeholder, \$value, \$paramType);
+                    }
+
+                    \$stmt->execute();
+
+                    return \$this->conn->lastInsertId();
+                }
+
+                /**
+                 * Update an existing record
+                 * @param string \$id
+                 * @param array \$data
+                 * @return void
+                 * @throws Exception
+                 */
+                public function update(string \$id, array \$data): void
+                {
+                    \$fields = [];
+                    \$values = [];
+
+                    foreach (\$data as \$field => \$value) {
+                        if (\$field !== 'id') {
+                            \$fields[] = "\$field = :\$field";
+                            \$values[":\$field"] = \$value;
+                        }
+                    }
+
+                    \$values[":id"] = \$id;
+
+                    \$sql = sprintf(
+                        "UPDATE `{tablename}` SET %s WHERE id = :id",
+                        implode(', ', \$fields)
+                    );
+
+                    \$stmt = \$this->conn->prepare(\$sql);
+
+                    foreach (\$values as \$placeholder => \$value) {
+                        \$paramType = is_int(\$value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                        \$stmt->bindValue(\$placeholder, \$value, \$paramType);
+                    }
+
+                    \$stmt->execute();
+
                     if (\$stmt->rowCount() === 0) {
                         throw new Exception("Record with ID \$id not found or no changes made.");
                     }
-        
-                    http_response_code(200);
-                    echo json_encode(["success" => "Record updated!", "id" => \$id]);
-            
-                } catch (Exception \$e) {
-                    http_response_code(400);
-                    echo json_encode(["error" => \$e->getMessage()]);
+                }
+
+                /**
+                 * Delete a specific record by ID
+                 * @param string \$id
+                 * @return void
+                 * @throws Exception
+                 */
+                public function delete(string \$id): void
+                {
+                    \$sql = "DELETE FROM `{tablename}` WHERE id = :id";
+
+                    \$stmt = \$this->conn->prepare(\$sql);
+                    \$stmt->bindValue(":id", \$id, PDO::PARAM_INT);
+                    \$stmt->execute();
+
+                    if (\$stmt->rowCount() === 0) {
+                        throw new Exception("Record with ID \$id not found.");
+                    }
                 }
             }
-        
-            /**
-            * Delete a specific record by ID
-            * @param string \$id
-            * @return void
-            */
-            public function delete(string \$id): void 
-            {
-                \$sql = "DELETE FROM `TABLE_NAME` WHERE id = :id";
-        
-                \$stmt = \$this->conn->prepare(\$sql);
-                \$stmt->bindValue(":id", \$id, PDO::PARAM_INT);
-        
-                \$stmt->execute();
-        
-                if (\$stmt->rowCount() === 0) {
-                    throw new Exception("Record with ID \$id not found.");
-                }
-            }
-        }
-        
-        PHP;
+            PHP;
+
         
         // Write the content to the gateway file
         file_put_contents($gatewayFile, $content);
