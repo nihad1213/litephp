@@ -10,23 +10,30 @@ $path = trim($path, "/"); // Trim leading and trailing slashes
 error_log("Current path: $path");
 
 // Handle the login route
-if ($path === "api/login") {
+if ($path === "login") {
     require __DIR__ . '/login.php'; // This is the login logic
     exit;
 }
 
-// Handle tasks route (e.g., /api/tasks or /api/tasks/{id})
-if ($path === "api/tasks" || str_starts_with($path, "api/tasks/")) {
-    // Extract task ID from the URL, if available (e.g., /api/tasks/1)
+// Handle tasks route (e.g., /tasks or /tasks/{id})
+if ($path === "tasks" || str_starts_with($path, "tasks/")) {
+    // Extract task ID from the URL, if available (e.g., /tasks/1)
     $parts = explode("/", $path);
-    $id = (count($parts) > 2) ? $parts[2] : null;
+    $id = (count($parts) > 1) ? $parts[1] : null;
 
     // Authorization header check
     $headers = getallheaders();
     $authorization = $headers['Authorization'] ?? null;
 
     if ($authorization) {
-        list($type, $token) = explode(' ', $authorization);
+        // Add a check to make sure the Authorization header has the right format
+        if (strpos($authorization, ' ') === false) {
+            http_response_code(400);
+            echo json_encode(["error" => "Invalid authorization format, expected 'Bearer token'"]);
+            exit;
+        }
+        
+        list($type, $token) = explode(' ', $authorization, 2);
 
         if ($type === 'Bearer' && !empty($token)) {
             try {
