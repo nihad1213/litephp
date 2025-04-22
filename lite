@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+require_once __DIR__ . '/api/bootstrap.php';
+
 /*
 |----------------------------------------------------------------------
 | Lightweight CLI Tool for PHP Server & Custom Commands
@@ -480,7 +482,39 @@ switch ($command) {
         break;
         
 
+    case 'db:migrate':
+        /*
+        |------------------------------------------------------------------
+        | Run Migrations
+        |------------------------------------------------------------------
+        | This command is a placeholder for running database migrations. 
+        */
+        $folderPath = __DIR__ . '/database';
 
+        $sqlFiles = glob($folderPath . '/*.sql');
+
+        if (empty($sqlFiles)) {
+            echo "No SQL files found in the database folder.\n";
+            return;
+        }
+
+        $pdo = $database->getConnect();
+
+        foreach ($sqlFiles as $file) {
+            $sql = file_get_contents($file);
+            
+            try {
+                $pdo->exec($sql);
+                echo "Executed: " . basename($file) . "\n";
+            } catch (PDOException $e) {
+                echo "Error importing: " . basename($file) . PHP_EOL;
+                echo "PDO Error: " . $e->getMessage() . PHP_EOL;
+                echo "Problematic SQL Preview:\n" . substr($sql, 0, 300) . "\n";
+            }
+        }
+        
+
+        break;
 
     default:
         /*
