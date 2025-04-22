@@ -493,6 +493,7 @@ switch ($command) {
 
         $sqlFiles = glob($folderPath . '/*.sql');
 
+        // If file is empty return error
         if (empty($sqlFiles)) {
             echo "No SQL files found in the database folder.\n";
             return;
@@ -501,8 +502,10 @@ switch ($command) {
         $pdo = $database->getConnect();
 
         foreach ($sqlFiles as $file) {
+            // Read all files in the database folder
             $sql = file_get_contents($file);
             
+            // Execute SQL commands
             try {
                 $pdo->exec($sql);
                 echo "Executed: " . basename($file) . "\n";
@@ -512,7 +515,6 @@ switch ($command) {
                 echo "Problematic SQL Preview:\n" . substr($sql, 0, 300) . "\n";
             }
         }
-        
 
         break;
 
