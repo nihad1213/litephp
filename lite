@@ -42,6 +42,19 @@ $command = $argv[1] ?? null;
 
 /*
 |----------------------------------------------------------------------
+| Styling Variables
+|----------------------------------------------------------------------
+| These variables are used to style the output in the terminal.
+*/
+$bold = "\033[1m";
+$reset = "\033[0m";
+$green = "\033[32m";
+$yellow = "\033[33m";
+$cyan = "\033[36m";
+$red = "\033[31m";
+
+/*
+|----------------------------------------------------------------------
 | Switch on Command
 |----------------------------------------------------------------------
 | Depending on the command passed, the script will call 
@@ -57,8 +70,8 @@ switch ($command) {
         | files from the 'api' directory.Once the server is started, the user
         | is prompted with instructions to stop it using Ctrl+C.
         */
-        echo "Starting the server at http://localhost:8000...\n";
-        echo "Press Ctrl+C to stop the server.\n\n";
+        echo $cyan . "Starting the server at " .$green. "http://localhost:8000" . $reset . "...\n";
+        echo $yellow . "Press Ctrl+C to stop the server." . $reset . "\n\n";
 
         $cmd = 'php -S localhost:8000 -t api'; // Modify this path if needed
         passthru($cmd);
@@ -77,7 +90,7 @@ switch ($command) {
     
         // Check if .env file exists
         if (!file_exists($envFile)) {
-            echo ".env file not found. Run: cp .env.example .env\n";
+            echo $red . ".env file not found. Run: cp .env.example .env" . $reset . "\n";
             return;
         }
     
@@ -123,8 +136,8 @@ switch ($command) {
         // Save updated contents back to .env
         file_put_contents($envFile, $envContent);
     
-        echo "JWT_SECRET updated successfully!\n";
-        echo "New key: $key\n";
+        echo $green . "JWT_SECRET updated successfully!" . $reset . "\n";
+        echo $cyan . "New key: $key" . $reset . "\n";
     
         break;
     
@@ -142,12 +155,12 @@ switch ($command) {
         $controllerName = $argv[2] ?? null;
     
         if (!$controllerName) {
-            echo "Error: You must specify a controller name.\n";
-            echo "Example: php lite create:controller TaskController\n";
+            echo $red . "Error: You must specify a controller name." . $reset . "\n";
+            echo $yellow ."Example: php lite create:controller TaskController" . $reset . "\n";
             return;
         }
     
-        // Ensure the controller ends with 'Controller'
+        // Add Controller if there is no Controller in filename
         if (!str_ends_with($controllerName, 'Controller')) {
             $controllerName .= 'Controller';
         }
@@ -160,7 +173,7 @@ switch ($command) {
         }
     
         if (file_exists($controllerFile)) {
-            echo "Error: Controller '$controllerName' already exists.\n";
+            echo $red . "Error: Controller '$controllerName' already exists." . $reset . "\n";
             return;
         }
     
@@ -290,7 +303,7 @@ switch ($command) {
     
         file_put_contents($controllerFile, $content);
     
-        echo "Controller created: controllers/{$controllerName}.php\n";
+        echo $green . "Controller created: controllers/{$controllerName}.php" . $reset . "\n";
         break;
     
     case 'create:gateway':
@@ -307,12 +320,12 @@ switch ($command) {
         $gatewayName = $argv[2] ?? null;
         
         if (!$gatewayName) {
-            echo "Error: You must specify a gateway name.\n";
-            echo "Example: php lite create:gateway TaskGateway\n";
+            echo $red . "Error: You must specify a gateway name." . $reset . "\n";
+            echo $yellow . "Example: php lite create:gateway TaskGateway" . $reset . "\n";
             return;
         }
         
-        // Ensure the gateway ends with 'Gateway'
+        // If there is no Gateway in filename, add it
         if (!str_ends_with($gatewayName, 'Gateway')) {
             $gatewayName .= 'Gateway';
         }
@@ -325,7 +338,7 @@ switch ($command) {
         }
         
         if (file_exists($gatewayFile)) {
-            echo "Error: Gateway '$gatewayName' already exists.\n";
+            echo $red . "Error: Gateway '$gatewayName' already exists." . $reset . "\n";
             return;
         }
         
@@ -478,7 +491,7 @@ switch ($command) {
         // Write the content to the gateway file
         file_put_contents($gatewayFile, $content);
         
-        echo "Gateway '$gatewayName' created successfully!\n";
+        echo $green . "Gateway '$gatewayName' created successfully!" . $reset . "\n";
         break;
         
 
@@ -495,7 +508,7 @@ switch ($command) {
 
         // If file is empty return error
         if (empty($sqlFiles)) {
-            echo "No SQL files found in the database folder.\n";
+            echo $red . "No SQL files found in the database folder." . $reset . "\n";
             return;
         }
 
