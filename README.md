@@ -1,5 +1,5 @@
 # LitePHP Framework
-[![Downloads](https://img.shields.io/packagist/dt/nihad1213/litephp.svg)](https://packagist.org/packages/nihad1213/litephp)
+![Downloads](https://img.shields.io/packagist/dt/nihad1213/litephp.svg?cacheBust=1)
 
 LitePHP is a lightweight PHP framework designed for building simple and efficient APIs. It provides a straightforward CLI tool for common development tasks and a minimalist structure for rapid API development.
 
